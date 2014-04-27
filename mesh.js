@@ -44,12 +44,32 @@ function findHalfedge(start, end) {
   return -1;
 }
 
+// get pair halfedge function
 function getPairHalfedge(i) {
   if (i % 2 == 0) {
     return i + 1;
   } else {
     return i - 1;
   }
+}
+
+//// CIRCULATORS
+var circulatorlimit = 999;
+
+// get vertices for a given face (specified by one its adjacent halfedges)
+function getFaceVertices(halfedge)
+{
+  var vertices = [];
+  //var halfedge = mesh.faces[f].halfedge;
+  var h = halfedge;
+  var count = 0;
+  do {
+    vertices.push(mesh.halfedges[h].start);
+    h = mesh.halfedges[h].next;
+    if (h < 0) { throw "Unset index, cannot continue."; }
+    if (count++ > circulatorlimit) { throw "Runaway face circulator."; }
+  } while (h != halfedge);
+  return vertices;
 }
 
 // add halfedge pair function
@@ -197,15 +217,15 @@ svg.append("line")
 */
 
 var c = svg.selectAll("circle")
-  .data(vertices)
+  .data(mesh.vertices)
   .enter()
   
   c.append("circle")
   .attr("cx", function(d) {
-  	return d[0];
+  	return d.x;
   })
   .attr("cy", function(d) {
-  	return d[1];
+  	return d.y;
   })
   .attr("r", 4)
   .attr("class", function(d, i) {
@@ -220,10 +240,10 @@ var c = svg.selectAll("circle")
 
 c.append("circle")
   .attr("cx", function(d) {
-  	return d[0];
+  	return d.x;
   })
   .attr("cy", function(d) {
-  	return d[1];
+  	return d.y;
   })
   .attr("r", 10)
   .attr("fill", "none")
@@ -254,13 +274,13 @@ var svg2 = d3.select("#faces .sectionGraphic")
   .append("svg")
   .attr("width", w)
   .attr("height", h);
-  
+
 svg2.selectAll("polygon")
-  .data(faces)
+  .data(mesh.faces)
   .enter()
   .append("polygon")
   .attr("points", function(d) {
-  	return d.map(function(e) {
+  	return getFaceVertices(d.halfedge).map(function(e) {
   		return vertices[e].join(",");
   	}).join(" ");
   })
@@ -269,15 +289,15 @@ svg2.selectAll("polygon")
   .attr("fill", "#DEF9EE");
 
   var c2 = svg2.selectAll("circle")
-    .data(vertices)
+    .data(mesh.vertices)
     .enter()
   
     c2.append("circle")
     .attr("cx", function(d) {
-    	return d[0];
+    	return d.x;
     })
     .attr("cy", function(d) {
-    	return d[1];
+    	return d.y;
     })
     .attr("r", 4)
     .attr("class", function(d, i) {
@@ -292,10 +312,10 @@ svg2.selectAll("polygon")
 
   c2.append("circle")
     .attr("cx", function(d) {
-    	return d[0];
+    	return d.x;
     })
     .attr("cy", function(d) {
-    	return d[1];
+    	return d.y;
     })
     .attr("r", 10)
     .attr("fill", "none")
