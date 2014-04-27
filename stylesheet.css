@@ -1,0 +1,45 @@
+html {
+  background: #ffffff;
+  font: 12px "Helvetica�Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: normal;
+  /*color: #888;*/
+  width: 100%;
+  line-height: 1.5;
+  position:relative;
+}
+
+#content {
+  width: 800px;
+  margin: 0 auto;
+}
+
+h1.title {
+  /* pass */
+}
+
+p.subtitle {
+  font-style: italic;
+  margin-bottom: 100px;
+}
+
+.section {
+  position: relative;
+  margin-left: 120px;
+  margin-bottom:30px;
+  /*line-height: 1.3;*/
+  width: 600px;
+}
+
+.sectionTitle {
+  position: absolute;
+  left: -120px;
+  width: 82px;
+  color: #000;
+  font-weight: bold;
+}
+
+.sectionSubtitle {
+  margin-top: 10px;
+  color: #000;
+  font-weight: normal;
+}
