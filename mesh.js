@@ -11,6 +11,16 @@ var vertices = [
 var faces = [
   [0, 4, 5], [5, 4, 6, 2], [2, 6, 1], [2, 1, 3]
   ];
+
+document.getElementById("points").getElementsByClassName("sectionCode")[0].children[0].innerHTML =
+  "vertices = [" + vertices.map(function(d) {
+    return "[" + d + "]"
+  }) + "]";
+    
+document.getElementById("faces").getElementsByClassName("sectionCode")[0].children[0].innerHTML =
+  "faces = [" + faces.map(function(d) {
+    return "[" + d + "]"
+  }) + "]";
   
 //--------------------------- START: HALFEDGE MESH ---------------------------//
 
