@@ -324,11 +324,18 @@ var c = svg.selectAll("circle")
   .attr("class", function(d, i) {
     return "vertex-" + i;
   })
+  .attr("vertex", function(d, i) {
+    return i;
+  })
   .on('mouseover', function(d) {
-      d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'visible'});
+    d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'visible'});
+    var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':3});
   })
   .on('mouseout', function(d) {
-      d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'hidden'});
+    d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'hidden'});
+    var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':1});
   });
 
 c.append("circle")
@@ -386,21 +393,20 @@ svg2.selectAll("polygon")
   })
   .on('mouseover', function(d) {
     var h = mesh.faces[this.getAttribute('face')].halfedge;
-    //d3.selectAll(".halfedge-" + h).style({'stroke-width':3});
-    var halfedges = getFaceHalfedges(h);
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':3});
+    /*var halfedges = getFaceHalfedges(h);
     for (var i = 0; i < halfedges.length; i++) {
       var h = halfedges[i];
       d3.selectAll(".halfedge-" + halfedges[i]).style({'stroke-width':3});
-    }
-    
+    }*/
   })
   .on('mouseout', function(d) {
     var h = mesh.faces[this.getAttribute('face')].halfedge;
-    //d3.selectAll(".halfedge-" + h).style({'stroke-width':1});
-    var halfedges = getFaceHalfedges(h);
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':1});
+    /*var halfedges = getFaceHalfedges(h);
     for (var i = 0; i < halfedges.length; i++) {
       d3.selectAll(".halfedge-" + halfedges[i]).style({'stroke-width':1});
-    }
+    }*/
   });
 
 var polygons = [];
@@ -461,11 +467,18 @@ var c2 = svg2.selectAll("circle")
   .attr("class", function(d, i) {
     return "vertex-" + i;
   })
+  .attr("vertex", function(d, i) {
+    return i;
+  })
   .on('mouseover', function(d) {
       d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'visible'});
+    var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':3});
   })
   .on('mouseout', function(d) {
       d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'hidden'});
+    var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':1});
   });
 
 c2.append("circle")
@@ -489,7 +502,7 @@ var svg3 = d3.select("#halfedges .sectionGraphic")
   .attr("width", w)
   .attr("height", h);
 
-var edgeLines = createOffsetEdgeLines(3.0, 15.0);
+var edgeLines = createOffsetEdgeLines(2.0, 15.0);
 
 svg3.selectAll("line")
   .data(edgeLines)
@@ -521,6 +534,7 @@ svg3.selectAll("line")
     d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].prev).style({'stroke-width':3}).style({'stroke':"#f0df7f"});
     d3.selectAll(".halfedge-" + getPairHalfedge(this.getAttribute('halfedge'))).style({'stroke-width':3}).style({'stroke':"#e296f0"});
     d3.selectAll(".face-" + mesh.halfedges[this.getAttribute('halfedge')].adj).style({'fill':"#bbf0d7"});
+    d3.selectAll(".vertex-" + mesh.halfedges[this.getAttribute('halfedge')].start + "-halo").style({visibility:'visible'});
   })
   .on('mouseout', function(d) {
     d3.select(this).style({'stroke-width':1});
@@ -528,6 +542,7 @@ svg3.selectAll("line")
     d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].prev).style({'stroke-width':1}).style({'stroke':"black"});
     d3.selectAll(".halfedge-" + getPairHalfedge(this.getAttribute('halfedge'))).style({'stroke-width':1}).style({'stroke':"black"});
     d3.selectAll(".face-" + mesh.halfedges[this.getAttribute('halfedge')].adj).style({'fill':"#DEF9EE"});
+    d3.selectAll(".vertex-" + mesh.halfedges[this.getAttribute('halfedge')].start + "-halo").style({visibility:'hidden'});
   });
 
 svg3.selectAll(".arrow")
@@ -547,10 +562,7 @@ svg3.selectAll(".arrow")
     return d.y2;
   })
   .attr("stroke-width", 1)
-  .attr("stroke", "black")
-  .attr("class", function(d, i) {
-    return "halfedge-" + i;
-  });
+  .attr("stroke", "black");
   
 svg3.selectAll("text")
   .data(createOffsetEdgeLines(12.0, 0.0))
@@ -585,11 +597,18 @@ c3.append("circle")
   .attr("class", function(d, i) {
     return "vertex-" + i;
   })
+  .attr("vertex", function(d, i) {
+    return i;
+  })
   .on('mouseover', function(d) {
-      d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'visible'});
+    d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'visible'});
+    var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':3});
   })
   .on('mouseout', function(d) {
-      d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'hidden'});
+    d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'hidden'});
+    var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
+    d3.selectAll(".halfedge-" + h).style({'stroke-width':1});
   });
 
 c3.append("circle")
