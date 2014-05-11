@@ -14,12 +14,12 @@ var faces = [
 
 document.getElementById("points").getElementsByClassName("sectionCode")[0].children[0].innerHTML =
   "vertices = [" + vertices.map(function(d) {
-    return "[" + d + "]"
+    return "[" + d + "]";
   }) + "]";
     
 document.getElementById("faces").getElementsByClassName("sectionCode")[0].children[0].innerHTML =
   "faces = [" + faces.map(function(d) {
-    return "[" + d + "]"
+    return "[" + d + "]";
   }) + "]";
   
 //--------------------------- START: HALFEDGE MESH ---------------------------//
@@ -56,6 +56,7 @@ function findHalfedge(start, end) {
 
 // get pair halfedge function
 function getPairHalfedge(i) {
+  i = parseInt(i)
   if (i % 2 == 0) {
     return i + 1;
   } else {
@@ -230,6 +231,10 @@ function getEdgeVector(i) {
   };
 }
 
+//--------------------------- END:   HALFEDGE MESH ---------------------------//
+
+//// Some helper functions
+
 // rotate a vector (radians)
 function rotateVector(vector, theta) {
   cs = Math.cos(theta);
@@ -260,7 +265,7 @@ function createEdgeLines() {
   return lines;
 }
 
-function createOffsetEdgeLines(offset) {
+function createOffsetEdgeLines(offset, short) {
   lines = []
   var n = mesh.halfedges.length;
   for (var i = 0; i < n; i++) {
@@ -272,16 +277,31 @@ function createOffsetEdgeLines(offset) {
     var eVec = getEdgeVector(i);
     var oVec = rotateVector(eVec, Math.PI * -0.5);
     lines.push({
-      x1: x1 + offset * oVec.x,
-      x2: x2 + offset * oVec.x,
-      y1: y1 + offset * oVec.y,
-      y2: y2 + offset * oVec.y
+      x1: x1 + offset * oVec.x + short * eVec.x,
+      x2: x2 + offset * oVec.x - short * eVec.x,
+      y1: y1 + offset * oVec.y + short * eVec.y,
+      y2: y2 + offset * oVec.y - short * eVec.y
     });
   }
   return lines;
 }
 
-//--------------------------- END:   HALFEDGE MESH ---------------------------//
+// create arrows (because D3 won't do it for me...)
+function createArrows(lines) {
+  var arrows = [];
+  var n = lines.length;
+  for (var i = 0; i < n; i++) {
+    var eVec = getEdgeVector(i);
+    var oVec = rotateVector(eVec, Math.PI * -0.5);
+    arrows.push({
+      x1: lines[i].x2,
+      x2: lines[i].x2 + 3.0 * oVec.x - 3.0 * eVec.x,
+      y1: lines[i].y2,
+      y2: lines[i].y2 + 3.0 * oVec.y - 3.0 * eVec.y
+    });
+  }
+  return arrows;
+}
 
 // create SVG element: vertices
 var svg = d3.select("#points .sectionGraphic")
@@ -357,10 +377,10 @@ svg2.selectAll("polygon")
   		return mesh.vertices[e].x + "," + mesh.vertices[e].y;
   	}).join(" ");
   })
-  //.attr("stroke", "black")
-  //.attr("stroke-width", .5)
-  //.attr("stroke-dasharray", "5,5")
   .attr("fill", "#DEF9EE")
+  .attr("class", function(d, i) {
+    return "face-" + i;
+  })
   .attr("face", function(d, i) {
     return i;
   })
@@ -404,8 +424,7 @@ svg2.selectAll("text")
   	return d.centroid()[1];
   })
   .attr("font-family", "sans-serif")
-  .attr("font-size", "11px") 
-
+  .attr("font-size", "11px");
 
 svg2.selectAll("line")
   .data(createEdgeLines())
@@ -429,7 +448,7 @@ svg2.selectAll("line")
 
 var c2 = svg2.selectAll("circle")
   .data(mesh.vertices)
-  .enter()
+  .enter();
 
   c2.append("circle")
   .attr("cx", function(d) {
@@ -469,9 +488,11 @@ var svg3 = d3.select("#halfedges .sectionGraphic")
   .append("svg")
   .attr("width", w)
   .attr("height", h);
-    
+
+var edgeLines = createOffsetEdgeLines(3.0, 15.0);
+
 svg3.selectAll("line")
-  .data(createOffsetEdgeLines(3.0))
+  .data(edgeLines)
   .enter()
   .append("line")
   .attr("x1", function(d) {
@@ -495,8 +516,93 @@ svg3.selectAll("line")
     return i;
   })
   .on('mouseover', function(d) {
-      d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].next).style({'stroke-width':3});
+    d3.select(this).style({'stroke-width':3});
+    d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].next).style({'stroke-width':3}).style({'stroke':"#7ff0e8"});
+    d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].prev).style({'stroke-width':3}).style({'stroke':"#f0df7f"});
+    d3.selectAll(".halfedge-" + getPairHalfedge(this.getAttribute('halfedge'))).style({'stroke-width':3}).style({'stroke':"#e296f0"});
+    d3.selectAll(".face-" + mesh.halfedges[this.getAttribute('halfedge')].adj).style({'fill':"#bbf0d7"});
   })
   .on('mouseout', function(d) {
-      d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].next).style({'stroke-width':1});
+    d3.select(this).style({'stroke-width':1});
+    d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].next).style({'stroke-width':1}).style({'stroke':"black"});
+    d3.selectAll(".halfedge-" + mesh.halfedges[this.getAttribute('halfedge')].prev).style({'stroke-width':1}).style({'stroke':"black"});
+    d3.selectAll(".halfedge-" + getPairHalfedge(this.getAttribute('halfedge'))).style({'stroke-width':1}).style({'stroke':"black"});
+    d3.selectAll(".face-" + mesh.halfedges[this.getAttribute('halfedge')].adj).style({'fill':"#DEF9EE"});
   });
+
+svg3.selectAll(".arrow")
+  .data(createArrows(edgeLines))
+  .enter()
+  .append("line")
+  .attr("x1", function(d) {
+    return d.x1;
+  })
+  .attr("x2", function(d) {
+    return d.x2;
+  })
+  .attr("y1", function(d) {
+    return d.y1;
+  })
+  .attr("y2", function(d) {
+    return d.y2;
+  })
+  .attr("stroke-width", 1)
+  .attr("stroke", "black")
+  .attr("class", function(d, i) {
+    return "halfedge-" + i;
+  });
+  
+svg3.selectAll("text")
+  .data(createOffsetEdgeLines(12.0, 0.0))
+  .enter()
+  .append("text")
+  .text(function(d, i) {
+  	return i;
+  })
+  .attr("x", function(d) {
+  	return 0.5 * (d.x1 + d.x2);
+  })
+  .attr("y", function(d) {
+  	return 0.5 * (d.y1 + d.y2);
+  })
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "11px")
+  .attr("text-anchor", "middle")
+  .attr("dominant-baseline", "central");
+
+var c3 = svg3.selectAll("circle")
+  .data(mesh.vertices)
+  .enter()
+
+c3.append("circle")
+  .attr("cx", function(d) {
+  	return d.x;
+  })
+  .attr("cy", function(d) {
+  	return d.y;
+  })
+  .attr("r", 2)
+  .attr("class", function(d, i) {
+    return "vertex-" + i;
+  })
+  .on('mouseover', function(d) {
+      d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'visible'});
+  })
+  .on('mouseout', function(d) {
+      d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'hidden'});
+  });
+
+c3.append("circle")
+  .attr("cx", function(d) {
+  	return d.x;
+  })
+  .attr("cy", function(d) {
+  	return d.y;
+  })
+  .attr("r", 10)
+  .attr("fill", "none")
+  .attr("stroke", "black")
+  .attr("class", function(d, i) {
+    return "vertex-" + i + "-halo";
+  })
+  .attr("visibility", "hidden");
