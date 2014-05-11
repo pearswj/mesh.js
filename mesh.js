@@ -392,6 +392,7 @@ svg2.selectAll("polygon")
     return i;
   })
   .on('mouseover', function(d) {
+    d3.select(this).style({'fill':"#bbf0d7"});
     var h = mesh.faces[this.getAttribute('face')].halfedge;
     d3.selectAll(".halfedge-" + h).style({'stroke-width':3});
     /*var halfedges = getFaceHalfedges(h);
@@ -401,6 +402,7 @@ svg2.selectAll("polygon")
     }*/
   })
   .on('mouseout', function(d) {
+    d3.select(this).style({'fill':"#DEF9EE"});
     var h = mesh.faces[this.getAttribute('face')].halfedge;
     d3.selectAll(".halfedge-" + h).style({'stroke-width':1});
     /*var halfedges = getFaceHalfedges(h);
