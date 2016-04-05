@@ -355,11 +355,22 @@ var c = svg.selectAll("circle")
     d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'visible'});
     var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
     d3.selectAll(".halfedge-" + h).style({'stroke-width':3});
+    // object description
+    document.getElementById("points")
+      .getElementsByClassName("sectionObject")[0].innerHTML =
+      "<pre>\n<code>\nVertex #" + this.getAttribute('vertex')
+      + "\n  x: " + mesh.vertices[this.getAttribute('vertex')].x
+      + "\n  y: " + mesh.vertices[this.getAttribute('vertex')].y
+      + "\n  halfedge: " + mesh.vertices[this.getAttribute('vertex')].halfedge
+      + "\n</code>\n</pre>";
   })
   .on('mouseout', function(d) {
     d3.selectAll("." + this.getAttribute('class') + "-halo").style({visibility:'hidden'});
     var h = mesh.vertices[this.getAttribute('vertex')].halfedge;
     d3.selectAll(".halfedge-" + h).style({'stroke-width':1});
+    // object description
+    document.getElementById("points")
+      .getElementsByClassName("sectionObject")[0].innerHTML = "";
   });
 
 c.append("circle")
@@ -424,6 +435,12 @@ svg2.selectAll("polygon")
       var h = halfedges[i];
       d3.selectAll(".halfedge-" + halfedges[i]).style({'stroke-width':3});
     }*/
+    // object description
+    document.getElementById("faces")
+      .getElementsByClassName("sectionObject")[0].innerHTML =
+      "<pre>\n<code>\nFace #" + this.getAttribute('face')
+      + "\n  halfedge: " + mesh.faces[this.getAttribute('face')].halfedge
+      + "\n</code>\n</pre>";
   })
   .on('mouseout', function(d) {
     d3.select(this).style({'fill':"#DEF9EE"});
@@ -433,6 +450,9 @@ svg2.selectAll("polygon")
     for (var i = 0; i < halfedges.length; i++) {
       d3.selectAll(".halfedge-" + halfedges[i]).style({'stroke-width':1});
     }*/
+    // object description
+    document.getElementById("faces")
+      .getElementsByClassName("sectionObject")[0].innerHTML = "";
   });
 
 var polygons = [];
@@ -561,6 +581,15 @@ svg3.selectAll("line")
     d3.selectAll(".halfedge-" + getPairHalfedge(this.getAttribute('halfedge'))).style({'stroke-width':3}).style({'stroke':"#e296f0"});
     d3.selectAll(".face-" + mesh.halfedges[this.getAttribute('halfedge')].adj).style({'fill':"#bbf0d7"});
     d3.selectAll(".vertex-" + mesh.halfedges[this.getAttribute('halfedge')].start + "-halo").style({visibility:'visible'});
+    // object description
+    document.getElementById("halfedges")
+      .getElementsByClassName("sectionObject")[0].innerHTML =
+      "<pre>\n<code>\nHalfedge #" + this.getAttribute('halfedge')
+      + "\n  start: " + mesh.halfedges[this.getAttribute('halfedge')].start
+      + "\n  adj: " + mesh.halfedges[this.getAttribute('halfedge')].adj
+      + "\n  next: " + mesh.halfedges[this.getAttribute('halfedge')].next
+      + "\n  prev: " + mesh.halfedges[this.getAttribute('halfedge')].prev
+      + "\n</code>\n</pre>";
   })
   .on('mouseout', function(d) {
     d3.select(this).style({'stroke-width':1});
@@ -569,6 +598,9 @@ svg3.selectAll("line")
     d3.selectAll(".halfedge-" + getPairHalfedge(this.getAttribute('halfedge'))).style({'stroke-width':1}).style({'stroke':"black"});
     d3.selectAll(".face-" + mesh.halfedges[this.getAttribute('halfedge')].adj).style({'fill':"#DEF9EE"});
     d3.selectAll(".vertex-" + mesh.halfedges[this.getAttribute('halfedge')].start + "-halo").style({visibility:'hidden'});
+    // object description
+    document.getElementById("halfedges")
+      .getElementsByClassName("sectionObject")[0].innerHTML = "";
   });
 
 svg3.selectAll(".arrow")

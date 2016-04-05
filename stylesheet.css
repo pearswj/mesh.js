@@ -47,3 +47,10 @@ p.description {
   color: #000;
   font-weight: normal;
 }
+
+.sectionObject {
+  position: absolute;
+  right: 150px;
+  top: 30px;
+  width: 50px
+}
